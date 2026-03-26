@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Turistou">
         <activity
+            android:name=".CadastrarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ListarActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

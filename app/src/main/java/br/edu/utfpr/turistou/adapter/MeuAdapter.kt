@@ -27,7 +27,10 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
         val cadastro = Cadastro(
             lista.getInt(0),
             lista.getString(1),
-            lista.getString(2)
+            lista.getString(2),
+            lista.getString(3),
+            lista.getString(4),
+            lista.getString(5)
         )
 
         return cadastro
@@ -48,7 +51,9 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
 
         // recupera os componentes visuais do elemento da lista
         val tvNome = v.findViewById<TextView>(R.id.tvNomeElementoLista)
-        val tvTelefone = v.findViewById<TextView>(R.id.tvTelefoneElementoLista)
+        val tvDescricao = v.findViewById<TextView>(R.id.tvDescricaoElementoLista)
+        val tvLatitude = v.findViewById<TextView>(R.id.tvLatitudeElementoLista)
+        val tvLongitude = v.findViewById<TextView>(R.id.tvLongitudeElementoLista)
         val btEditar = v.findViewById<ImageButton>(R.id.btEditarElementoLista)
 
         // posiciona o cursor na linha correspondente ao id
@@ -56,14 +61,19 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
 
         // preenche os componentes visuais com os dados do cursor
         tvNome.text = lista.getString(1)
-        tvTelefone.text = lista.getString(2)
+        tvDescricao.text = lista.getString(2)
+        tvLatitude.text = lista.getString(3)
+        tvLongitude.text = lista.getString(4)
 
         btEditar.setOnClickListener {
             lista.moveToPosition(id)
             val intent = Intent(contexto, MainActivity::class.java)
             intent.putExtra("id", lista.getInt(0))
             intent.putExtra("nome", lista.getString(1))
-            intent.putExtra("telefone", lista.getString(2))
+            intent.putExtra("descricao", lista.getString(2))
+            intent.putExtra("latitude", lista.getString(3))
+            intent.putExtra("longitude", lista.getString(4))
+            intent.putExtra("endereco", lista.getString(5))
             contexto.startActivity(intent)
         }
 

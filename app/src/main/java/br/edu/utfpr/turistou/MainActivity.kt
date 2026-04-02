@@ -1,6 +1,8 @@
 package br.edu.utfpr.turistou
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +17,17 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+        
+        val btnCadastrar = findViewById<Button>(R.id.btnCadastrar)
+        val btnListar = findViewById<Button>(R.id.btnListar)
+        
+        btnCadastrar.setOnClickListener {
+            startActivity(Intent(this, CadastrarActivity::class.java))
+        }
+        
+        btnListar.setOnClickListener {
+            startActivity(Intent(this, ListarActivity::class.java))
         }
     }
 }

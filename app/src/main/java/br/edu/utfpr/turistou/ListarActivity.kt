@@ -3,9 +3,7 @@ package br.edu.utfpr.turistou
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.SimpleCursorAdapter
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.utfpr.turistou.adapter.MeuAdapter
 import br.edu.utfpr.turistou.database.DatabaseHandler
@@ -33,8 +31,7 @@ class ListarActivity : AppCompatActivity() {
     }
 
     fun btIncluirOnClick(view: View) {
-        val intent = Intent( this, MainActivity::class.java )
-
+        val intent = Intent( this, CadastrarActivity::class.java )
         startActivity(intent)
     }
 }

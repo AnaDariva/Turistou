@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageButton
 import android.widget.TextView
-import br.edu.utfpr.turistou.MainActivity
+import br.edu.utfpr.turistou.CadastrarActivity
 import br.edu.utfpr.turistou.R
 import br.edu.utfpr.turistou.entity.Cadastro
 
@@ -65,7 +65,7 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
 
         btEditar.setOnClickListener {
             lista.moveToPosition(id)
-            val intent = Intent(contexto, MainActivity::class.java)
+            val intent = Intent(contexto, CadastrarActivity::class.java)
             intent.putExtra("id", lista.getInt(0))
             intent.putExtra("nome", lista.getString(1))
             intent.putExtra("descricao", lista.getString(2))

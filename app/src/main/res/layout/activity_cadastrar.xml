@@ -80,6 +80,7 @@
         android:text="Atualizar localizacao" />
 
     <Button
+        android:id="@+id/btSalvar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginTop="10dp"
@@ -94,12 +95,5 @@
         android:onClick="btExcluirOnClick"
         android:text="Excluir" />
 
-    <Button
-        android:id="@+id/btPesquisar"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="10dp"
-        android:onClick="btPesquisarOnClick"
-        android:text="Pesquisar" />
 
 </LinearLayout>

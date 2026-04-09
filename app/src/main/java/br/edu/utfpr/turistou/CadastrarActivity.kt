@@ -12,7 +12,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.utfpr.turistou.database.DatabaseHandler
 import br.edu.utfpr.turistou.entity.Cadastro
@@ -28,8 +27,8 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
     private lateinit var etDescricao: EditText
     private lateinit var etLatitude: EditText
     private lateinit var etLongitude: EditText
+    private lateinit var btSalvar: Button
     private lateinit var btExcluir: Button
-    private lateinit var btPesquisar: Button
     private lateinit var locationManager: LocationManager
     private var aguardandoLocalizacao = false
 
@@ -44,18 +43,19 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         etDescricao = findViewById(R.id.etDescricao)
         etLatitude = findViewById(R.id.etLatitude)
         etLongitude = findViewById(R.id.etLongitude)
+        btSalvar = findViewById(R.id.btSalvar)
         btExcluir = findViewById(R.id.btExcluir)
-        btPesquisar = findViewById(R.id.btPesquisar)
 
         if (intent.getIntExtra("id", 0) != 0) {
+            btSalvar.text = "Atualizar"
             etCod.setText(intent.getIntExtra("id", 0).toString())
             etNome.setText(intent.getStringExtra("nome"))
             etDescricao.setText(intent.getStringExtra("descricao"))
             etLatitude.setText(intent.getStringExtra("latitude"))
             etLongitude.setText(intent.getStringExtra("longitude"))
         } else {
+            btSalvar.text = "Salvar"
             btExcluir.visibility = View.GONE
-            btPesquisar.visibility = View.GONE
         }
 
 
@@ -272,38 +272,6 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         finish()
     }
 
-    fun btPesquisarOnClick(view: View) {
-
-        val etCodPesquisa = EditText(this)
-        val builder = AlertDialog.Builder(this)
-
-        builder.setTitle("Código")
-        builder.setView(etCodPesquisa)
-        builder.setCancelable(false)
-        builder.setNegativeButton("Fechar", null)
-        builder.setPositiveButton(
-            "Pesquisar",
-            { dialogInterface, i ->
-
-                val registro = banco.pesquisar(
-                    etCodPesquisa.text.toString().toInt()
-                )
-
-                if (registro != null) {
-                    etCod.setText(registro.id.toString())
-                    etNome.setText(registro.nome)
-                    etDescricao.setText(registro.descricao)
-                    etLatitude.setText(registro.latitude)
-                    etLongitude.setText(registro.longitude)
-                } else {
-                    Toast.makeText(this, "Registro não encontrado!", Toast.LENGTH_SHORT).show()
-                }
-
-            })
-
-        builder.show()
-
-    }
 
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1001

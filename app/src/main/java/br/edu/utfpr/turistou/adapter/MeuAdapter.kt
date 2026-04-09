@@ -1,5 +1,6 @@
 package br.edu.utfpr.turistou.adapter
 
+import android.graphics.BitmapFactory
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import br.edu.utfpr.turistou.CadastrarActivity
 import br.edu.utfpr.turistou.R
@@ -25,12 +27,13 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
         lista.moveToPosition(id)
 
         val cadastro = Cadastro(
-            lista.getInt(0),
-            lista.getString(1),
-            lista.getString(2),
-            lista.getString(3),
-            lista.getString(4),
-            lista.getString(5)
+            lista.getInt(lista.getColumnIndexOrThrow("_id")),
+            lista.getString(lista.getColumnIndexOrThrow("nome")),
+            lista.getString(lista.getColumnIndexOrThrow("descricao")),
+            lista.getString(lista.getColumnIndexOrThrow("latitude")),
+            lista.getString(lista.getColumnIndexOrThrow("longitude")),
+            lista.getString(lista.getColumnIndexOrThrow("endereco")),
+            lista.getBlob(lista.getColumnIndexOrThrow("imagem"))
         )
 
         return cadastro
@@ -39,7 +42,7 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
     // Metodo responsável por retornar o id do item da lista
     override fun getItemId(id: Int): Long {
         lista.moveToPosition(id)
-        return lista.getInt(0).toLong()
+        return lista.getInt(lista.getColumnIndexOrThrow("_id")).toLong()
     }
 
     // Metodo responsável por criar a view de cada elemento da lista
@@ -53,25 +56,43 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
         val tvNome = v.findViewById<TextView>(R.id.tvNomeElementoLista)
         val tvDescricao = v.findViewById<TextView>(R.id.tvDescricaoElementoLista)
         val tvEndereco = v.findViewById<TextView>(R.id.tvEnderecoElementoLista)
+        val ivFoto = v.findViewById<ImageView>(R.id.ivFotoElementoLista)
         val btEditar = v.findViewById<ImageButton>(R.id.btEditarElementoLista)
 
         // posiciona o cursor na linha correspondente ao id
         lista.moveToPosition(id)
 
         // preenche os componentes visuais com os dados do cursor
-        tvNome.text = lista.getString(1)
-        tvDescricao.text = lista.getString(2)
-        tvEndereco.text = lista.getString(5)
+        val idCol = lista.getColumnIndexOrThrow("_id")
+        val nomeCol = lista.getColumnIndexOrThrow("nome")
+        val descricaoCol = lista.getColumnIndexOrThrow("descricao")
+        val latitudeCol = lista.getColumnIndexOrThrow("latitude")
+        val longitudeCol = lista.getColumnIndexOrThrow("longitude")
+        val enderecoCol = lista.getColumnIndexOrThrow("endereco")
+        val imagemCol = lista.getColumnIndexOrThrow("imagem")
+
+        tvNome.text = lista.getString(nomeCol)
+        tvDescricao.text = lista.getString(descricaoCol)
+        tvEndereco.text = lista.getString(enderecoCol)
+
+        val imagemBlob = lista.getBlob(imagemCol)
+        if (imagemBlob != null && imagemBlob.isNotEmpty()) {
+            val bitmap = BitmapFactory.decodeByteArray(imagemBlob, 0, imagemBlob.size)
+            ivFoto.setImageBitmap(bitmap)
+        } else {
+            ivFoto.setImageResource(android.R.drawable.ic_menu_gallery)
+        }
 
         btEditar.setOnClickListener {
             lista.moveToPosition(id)
             val intent = Intent(contexto, CadastrarActivity::class.java)
-            intent.putExtra("id", lista.getInt(0))
-            intent.putExtra("nome", lista.getString(1))
-            intent.putExtra("descricao", lista.getString(2))
-            intent.putExtra("latitude", lista.getString(3))
-            intent.putExtra("longitude", lista.getString(4))
-            intent.putExtra("endereco", lista.getString(5))
+            intent.putExtra("id", lista.getInt(idCol))
+            intent.putExtra("nome", lista.getString(nomeCol))
+            intent.putExtra("descricao", lista.getString(descricaoCol))
+            intent.putExtra("latitude", lista.getString(latitudeCol))
+            intent.putExtra("longitude", lista.getString(longitudeCol))
+            intent.putExtra("endereco", lista.getString(enderecoCol))
+            intent.putExtra("imagem", imagemBlob)
             contexto.startActivity(intent)
         }
 

@@ -6,5 +6,6 @@ data class Cadastro (
     val descricao: String,
     val latitude: String,
     val longitude: String,
-    val endereco: String = ""
+    val endereco: String = "",
+    val imagem: ByteArray? = null
 )

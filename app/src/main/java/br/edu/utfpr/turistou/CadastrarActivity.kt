@@ -1,6 +1,8 @@
 package br.edu.utfpr.turistou
 
 import android.Manifest
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -10,11 +12,14 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.utfpr.turistou.database.DatabaseHandler
 import br.edu.utfpr.turistou.entity.Cadastro
+import java.io.ByteArrayOutputStream
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -22,37 +27,54 @@ import java.net.URL
 
 class CadastrarActivity : AppCompatActivity(), LocationListener {
 
-    private lateinit var etCod: EditText
+    private var cadastroId: Int = 0
     private lateinit var etNome: EditText
     private lateinit var etDescricao: EditText
     private lateinit var etLatitude: EditText
     private lateinit var etLongitude: EditText
+    private lateinit var ivFoto: ImageView
     private lateinit var btSalvar: Button
     private lateinit var btExcluir: Button
     private lateinit var locationManager: LocationManager
     private var aguardandoLocalizacao = false
+    private var imagemBlob: ByteArray? = null
 
     private lateinit var banco: DatabaseHandler // Declarando a variável do banco de dados
+
+    private val register = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        if (bitmap != null) {
+            ivFoto.setImageBitmap(bitmap)
+            imagemBlob = bitmapToBlob(bitmap)
+        } else {
+            Toast.makeText(this, "Foto não capturada.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cadastrar)
 
-        etCod = findViewById(R.id.etCod)
         etNome = findViewById(R.id.etNome)
         etDescricao = findViewById(R.id.etDescricao)
         etLatitude = findViewById(R.id.etLatitude)
         etLongitude = findViewById(R.id.etLongitude)
+        ivFoto = findViewById(R.id.ivFoto)
         btSalvar = findViewById(R.id.btSalvar)
         btExcluir = findViewById(R.id.btExcluir)
 
-        if (intent.getIntExtra("id", 0) != 0) {
+        cadastroId = intent.getIntExtra("id", 0)
+
+        if (cadastroId != 0) {
             btSalvar.text = "Atualizar"
-            etCod.setText(intent.getIntExtra("id", 0).toString())
             etNome.setText(intent.getStringExtra("nome"))
             etDescricao.setText(intent.getStringExtra("descricao"))
             etLatitude.setText(intent.getStringExtra("latitude"))
             etLongitude.setText(intent.getStringExtra("longitude"))
+            imagemBlob = intent.getByteArrayExtra("imagem")
+            if (imagemBlob != null) {
+                val bitmap = BitmapFactory.decodeByteArray(imagemBlob, 0, imagemBlob!!.size)
+                ivFoto.setImageBitmap(bitmap)
+            }
         } else {
             btSalvar.text = "Salvar"
             btExcluir.visibility = View.GONE
@@ -174,8 +196,11 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         iniciarAtualizacaoLocalizacao(exibirToastErro = false)
     }
 
+    fun btTirarFotoOnClick(view: View) {
+        register.launch(null)
+    }
+
     fun btAlterarOnClick(view: View) {
-        val idTexto = etCod.text.toString()
         val nome = etNome.text.toString()
         val descricao = etDescricao.text.toString()
         val latitude = etLatitude.text.toString()
@@ -185,24 +210,26 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
             val endereco = buscarEnderecoPorCoordenadas(latitude, longitude)
 
             try {
-                if (idTexto.isEmpty()) {
+                if (cadastroId == 0) {
                     val cadastro = Cadastro(
                         0,
                         nome,
                         descricao,
                         latitude,
                         longitude,
-                        endereco
+                        endereco,
+                        imagemBlob
                     )
                     banco.insert(cadastro)
                 } else {
                     val cadastro = Cadastro(
-                        idTexto.toInt(),
+                        cadastroId,
                         nome,
                         descricao,
                         latitude,
                         longitude,
-                        endereco
+                        endereco,
+                        imagemBlob
                     )
                     banco.update(cadastro)
                 }
@@ -267,9 +294,19 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
     }
 
     fun btExcluirOnClick(view: View) {
-        banco.delete(etCod.text.toString().toInt())
+        if (cadastroId == 0) {
+            Toast.makeText(this, "Registro ainda não salvo.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        banco.delete(cadastroId)
         Toast.makeText(this, "Exclusão realizada com sucesso!", Toast.LENGTH_SHORT).show()
         finish()
+    }
+
+    private fun bitmapToBlob(bitmap: Bitmap): ByteArray {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+        return stream.toByteArray()
     }
 
 

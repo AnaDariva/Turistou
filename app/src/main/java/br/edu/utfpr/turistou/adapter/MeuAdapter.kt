@@ -52,8 +52,7 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
         // recupera os componentes visuais do elemento da lista
         val tvNome = v.findViewById<TextView>(R.id.tvNomeElementoLista)
         val tvDescricao = v.findViewById<TextView>(R.id.tvDescricaoElementoLista)
-        val tvLatitude = v.findViewById<TextView>(R.id.tvLatitudeElementoLista)
-        val tvLongitude = v.findViewById<TextView>(R.id.tvLongitudeElementoLista)
+        val tvEndereco = v.findViewById<TextView>(R.id.tvEnderecoElementoLista)
         val btEditar = v.findViewById<ImageButton>(R.id.btEditarElementoLista)
 
         // posiciona o cursor na linha correspondente ao id
@@ -62,8 +61,7 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
         // preenche os componentes visuais com os dados do cursor
         tvNome.text = lista.getString(1)
         tvDescricao.text = lista.getString(2)
-        tvLatitude.text = lista.getString(3)
-        tvLongitude.text = lista.getString(4)
+        tvEndereco.text = lista.getString(5)
 
         btEditar.setOnClickListener {
             lista.moveToPosition(id)

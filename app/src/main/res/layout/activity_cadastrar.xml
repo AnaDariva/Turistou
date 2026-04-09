@@ -9,17 +9,6 @@
     android:padding="16dp"
     tools:context=".CadastrarActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cod:" />
-
-    <EditText
-        android:id="@+id/etCod"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:inputType="number" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -78,6 +67,23 @@
         android:layout_marginTop="10dp"
         android:onClick="btAtualizarLocalizacaoOnClick"
         android:text="Atualizar localizacao" />
+
+    <ImageView
+        android:id="@+id/ivFoto"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="12dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="Foto do local"
+        android:src="@android:drawable/ic_menu_camera" />
+
+    <Button
+        android:id="@+id/btTirarFoto"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:onClick="btTirarFotoOnClick"
+        android:text="Tirar foto" />
 
     <Button
         android:id="@+id/btSalvar"

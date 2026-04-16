@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Turistou</string>
+    <string name="title_activity_settings">Configuracoes</string>
+    <string name="main_title">TURISTOU</string>
+    <string name="btn_cadastrar">Cadastrar</string>
+    <string name="btn_listar_pontos">Listar pontos</string>
+    <string name="btn_configuracoes">Configuracoes</string>
+
+    <!-- Preferencias de mapa -->
+    <string name="default_zoom_title">Nivel de zoom padrao</string>
+    <string name="map_type_title">Tipo de mapa</string>
 </resources>

@@ -312,7 +312,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
 
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1001
-        private const val GOOGLE_GEOCODING_API_KEY = "AIzaSyDsy454kAkXofX828BEMieAQ7EbtpjohZY"
+        private val GOOGLE_GEOCODING_API_KEY = BuildConfig.MAPS_API_KEY
     }
 
 }

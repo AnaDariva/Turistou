@@ -253,11 +253,17 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
             return ""
         }
 
+        val googleMapsApiKey = obterGoogleMapsApiKey()
+        if (googleMapsApiKey.isBlank()) {
+            Log.w("CadastrarActivity", "Chave Google Maps ausente no meta-data do Manifest.")
+            return ""
+        }
+
         var conexao: HttpURLConnection? = null
 
         return try {
             val endpoint =
-                "https://maps.googleapis.com/maps/api/geocode/xml?latlng=$latitude,$longitude&key=$GOOGLE_GEOCODING_API_KEY"
+                "https://maps.googleapis.com/maps/api/geocode/xml?latlng=$latitude,$longitude&key=$googleMapsApiKey"
             val url = URL(endpoint)
             conexao = url.openConnection() as HttpURLConnection
             conexao.connectTimeout = 10000
@@ -293,6 +299,16 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    private fun obterGoogleMapsApiKey(): String {
+        return try {
+            val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+            appInfo.metaData?.getString("com.google.android.geo.API_KEY").orEmpty()
+        } catch (e: Exception) {
+            Log.e("CadastrarActivity", "Erro ao obter chave Google Maps do Manifest.", e)
+            ""
+        }
+    }
+
     fun btExcluirOnClick(view: View) {
         if (cadastroId == 0) {
             Toast.makeText(this, "Registro ainda não salvo.", Toast.LENGTH_SHORT).show()
@@ -312,7 +328,6 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
 
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1001
-        private val GOOGLE_GEOCODING_API_KEY = BuildConfig.MAPS_API_KEY
     }
 
 }

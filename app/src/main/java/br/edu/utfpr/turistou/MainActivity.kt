@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 100
         private const val MAP_FRAGMENT_TAG = "main_map_fragment"
+        // Ponto de abertura inicial do mapa.
+        private val DEFAULT_MAP_CENTER = LatLng(-26.1976727, -52.690157)
     }
 
     private lateinit var mMap: GoogleMap
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     private val pinsDoBanco = mutableListOf<Marker>()
     private var marcadorLocalAtual: Marker? = null
+    private var cameraInicialPosicionada = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +105,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isMyLocationButtonEnabled = true
         aplicarPreferenciasDoMapa()
+        posicionarCameraInicialSeNecessario()
         carregarPinsDoBanco()
         verificarPermissaoEIniciarGPS()
     }
@@ -113,6 +117,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
             "satellite" -> GoogleMap.MAP_TYPE_SATELLITE
             else -> GoogleMap.MAP_TYPE_NORMAL
         }
+    }
+
+    private fun posicionarCameraInicialSeNecessario() {
+        if (!::mMap.isInitialized || cameraInicialPosicionada) return
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_MAP_CENTER, zoomPreferido()))
+        cameraInicialPosicionada = true
     }
 
     private fun zoomPreferido(): Float {
@@ -147,12 +157,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private fun desenharPinsNoMapa(registros: List<Cadastro>) {
         if (!::mMap.isInitialized) return
 
-        val zoomPadrao = zoomPreferido()
-
         pinsDoBanco.forEach { it.remove() }
         pinsDoBanco.clear()
 
-        val pontosValidos = registros.mapNotNull { cadastro ->
+        registros.forEach { cadastro ->
             val lat = cadastro.latitude.toDoubleOrNull()
             val lng = cadastro.longitude.toDoubleOrNull()
 
@@ -167,15 +175,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                 if (marker != null) {
                     pinsDoBanco.add(marker)
                 }
-                ponto
-            } else {
-                null
             }
-        }
-
-        when {
-            pontosValidos.isEmpty() -> return
-            else -> mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pontosValidos.first(), zoomPadrao))
         }
     }
 
@@ -235,7 +235,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         marcadorLocalAtual = mMap.addMarker(
             MarkerOptions().position(currentLatLng).title("Sua Posição")
         )
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, zoomPreferido()))
     }
 
     override fun onDestroy() {

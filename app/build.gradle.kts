@@ -1,14 +1,24 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 }
 
+val localProperties = Properties().apply {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        localFile.inputStream().use { load(it) }
+    }
+}
+
+val googleMapsApiKey = localProperties.getProperty("google_maps_api_key")
+    ?: throw GradleException("Defina google_maps_api_key no arquivo local.properties")
+
 android {
     namespace = "br.edu.utfpr.turistou"
     compileSdk = 35
 
-    val mapsApiKey = (project.findProperty("MAPS_API_KEY") as? String)
-        ?: "AIzaSyDsy454kAkXofX828BEMieAQ7EbtpjohZY"
 
     defaultConfig {
         applicationId = "br.edu.utfpr.turistou"
@@ -19,8 +29,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
-        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+        manifestPlaceholders["google_maps_api_key"] = googleMapsApiKey
     }
 
     buildTypes {
@@ -41,7 +50,7 @@ android {
     }
 
     buildFeatures {
-        buildConfig = true
+        buildConfig = false
     }
 }
 

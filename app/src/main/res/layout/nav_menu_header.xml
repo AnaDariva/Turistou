@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <ImageView
+            android:id="@+id/imgNavLogo"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/logo2"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter" />
+
+    <Button
+            android:id="@+id/btnNavCadastrar"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="start|center_vertical"
+            android:minHeight="48dp"
+            android:padding="12dp"
+            android:drawableStart="@android:drawable/ic_input_add"
+            android:drawablePadding="10dp"
+            android:text="@string/btn_cadastrar" />
+
+    <Button
+            android:id="@+id/btnNavListar"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="start|center_vertical"
+            android:minHeight="48dp"
+            android:padding="12dp"
+            android:drawableStart="@android:drawable/ic_menu_sort_by_size"
+            android:drawablePadding="10dp"
+            android:text="@string/btn_listar_pontos" />
+
+    <Button
+            android:id="@+id/btnNavConfig"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="start|center_vertical"
+            android:minHeight="48dp"
+            android:padding="12dp"
+            android:drawableStart="@android:drawable/ic_menu_manage"
+            android:drawablePadding="10dp"
+            android:text="@string/btn_configuracoes" />
+
+</LinearLayout>

@@ -4,7 +4,9 @@
     <string name="main_title">TURISTOU</string>
     <string name="btn_cadastrar">Cadastrar</string>
     <string name="btn_listar_pontos">Listar pontos</string>
-    <string name="btn_configuracoes">Configuracoes</string>
+    <string name="btn_configuracoes">Configurações</string>
+    <string name="navigation_drawer_open">Abrir menu</string>
+    <string name="navigation_drawer_close">Fechar menu</string>
 
     <!-- Preferencias de mapa -->
     <string name="default_zoom_title">Nivel de zoom padrao</string>

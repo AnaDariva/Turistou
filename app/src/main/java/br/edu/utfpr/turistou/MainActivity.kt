@@ -7,9 +7,15 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.core.view.GravityCompat
+import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
@@ -54,10 +60,30 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         banco = DatabaseHandler(this)
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
-        val btnCadastrar = findViewById<Button>(R.id.btnCadastrar)
-        val btnListar = findViewById<Button>(R.id.btnListar)
-        val btnConfig = findViewById<Button>(R.id.btnConfig)
+        // Configura toolbar e drawer
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        // Esconde o título padrão para mostrar apenas o logo
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
+        val navigationView = findViewById<NavigationView>(R.id.navigationView)
+
+        val toggle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // Busca os botões no header do NavigationView (foram movidos do layout principal)
+        val header = navigationView.getHeaderView(0)
+        val btnCadastrar = header.findViewById<Button>(R.id.btnNavCadastrar)
+        val btnListar = header.findViewById<Button>(R.id.btnNavListar)
+        val btnConfig = header.findViewById<Button>(R.id.btnNavConfig)
         val mapFragment = (supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) as? SupportMapFragment)
             ?: SupportMapFragment.newInstance().also {
                 supportFragmentManager.beginTransaction()
@@ -67,17 +93,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         mapFragment.getMapAsync(this)
 
         btnCadastrar.setOnClickListener {
+            drawerLayout.closeDrawer(GravityCompat.START)
             startActivity(Intent(this, CadastrarActivity::class.java))
         }
 
         btnListar.setOnClickListener {
+            drawerLayout.closeDrawer(GravityCompat.START)
             startActivity(Intent(this, ListarActivity::class.java))
         }
 
         btnConfig.setOnClickListener {
+            drawerLayout.closeDrawer(GravityCompat.START)
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
+        // Não abrir o drawer automaticamente ao iniciar. Mostrar o mapa por padrão.
         verificarPermissaoEIniciarGPS()
     }
 

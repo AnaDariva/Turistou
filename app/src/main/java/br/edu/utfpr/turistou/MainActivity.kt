@@ -7,8 +7,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -44,7 +42,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private lateinit var locationManager: LocationManager
 
     private val pinsDoBanco = mutableListOf<Marker>()
-    private var marcadorLocalAtual: Marker? = null
     private var cameraInicialPosicionada = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +76,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // Busca os botões no header do NavigationView (foram movidos do layout principal)
+        // Busca os botões no header do NavigationView
         val header = navigationView.getHeaderView(0)
         val btnCadastrar = header.findViewById<Button>(R.id.btnNavCadastrar)
         val btnListar = header.findViewById<Button>(R.id.btnNavListar)
@@ -112,6 +109,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     override fun onResume() {
+        // Quando volta ao primeiro plano, reaplica preferências e recarrega pins
         super.onResume()
         if (::mMap.isInitialized) {
             aplicarPreferenciasDoMapa()
@@ -121,6 +119,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     override fun onPause() {
+        // Suspende atualizações de localização ao pausar a activity
         super.onPause()
         if (::locationManager.isInitialized) {
             try {
@@ -131,6 +130,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     override fun onMapReady(map: GoogleMap) {
+        // Recebe o mapa quando pronto, configura opções e inicia carregamento
         mMap = map
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isMyLocationButtonEnabled = true
@@ -141,6 +141,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     private fun aplicarPreferenciasDoMapa() {
+        // Ajusta o tipo do mapa conforme as preferências do usuário
         if (!::mMap.isInitialized) return
 
         mMap.mapType = when (SettingsActivity.getMapType(this)) {
@@ -150,16 +151,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     private fun posicionarCameraInicialSeNecessario() {
+        // Posiciona a câmera no ponto default apenas na primeira vez
         if (!::mMap.isInitialized || cameraInicialPosicionada) return
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_MAP_CENTER, zoomPreferido()))
         cameraInicialPosicionada = true
     }
 
     private fun zoomPreferido(): Float {
+        // Obtém o nível de zoom selecionado nas configurações
         return SettingsActivity.getDefaultZoom(this).toFloat()
     }
 
     private fun carregarPinsDoBanco() {
+        // Carrega registros do banco em background e os envia para desenhar no UI
         Thread {
             val registros = mutableListOf<Cadastro>()
 
@@ -185,6 +189,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     private fun desenharPinsNoMapa(registros: List<Cadastro>) {
+        // Remove marcadores antigos e adiciona marcadores para cada cadastro
         if (!::mMap.isInitialized) return
 
         pinsDoBanco.forEach { it.remove() }
@@ -210,6 +215,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     private fun verificarPermissaoEIniciarGPS() {
+        // Verifica permissões e inicia requests de localização se permitido
         val fineGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         val coarseGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
@@ -230,7 +236,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
             try {
                 // Já tem permissão, inicia atualização.
-                // DICA: Use GPS_PROVIDER e NETWORK_PROVIDER para funcionar melhor em locais fechados
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5f, this)
             } catch (_: SecurityException) {
@@ -245,6 +250,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        // Trata o retorno da solicitação de permissão de localização
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
@@ -259,15 +265,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     override fun onLocationChanged(location: Location) {
         if (!::mMap.isInitialized) return
-
-        marcadorLocalAtual?.remove()
-        val currentLatLng = LatLng(location.latitude, location.longitude)
-        marcadorLocalAtual = mMap.addMarker(
-            MarkerOptions().position(currentLatLng).title("Sua Posição")
-        )
     }
 
     override fun onDestroy() {
+        // Limpa listeners de localização ao destruir a activity
         super.onDestroy()
         try {
             locationManager.removeUpdates(this)

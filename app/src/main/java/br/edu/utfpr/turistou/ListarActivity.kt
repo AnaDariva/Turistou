@@ -10,10 +10,13 @@ import br.edu.utfpr.turistou.database.DatabaseHandler
 
 class ListarActivity : AppCompatActivity() {
 
+    // ListView que contém os registros carregados
     private lateinit var lvRegistros : ListView
 
+    // Handler para operações no banco
     private lateinit var banco : DatabaseHandler
 
+    // Inicializa layout e instâncias necessárias
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listar)
@@ -23,6 +26,7 @@ class ListarActivity : AppCompatActivity() {
 
     }
 
+    // Carrega registros do banco e aplica adapter
     override fun onStart() {
         super.onStart()
         val registros = banco.listar()
@@ -30,6 +34,7 @@ class ListarActivity : AppCompatActivity() {
         lvRegistros.adapter = adapter
     }
 
+    // Abre a tela de cadastro para incluir novo registro
     fun btIncluirOnClick(view: View) {
         val intent = Intent( this, CadastrarActivity::class.java )
         startActivity(intent)

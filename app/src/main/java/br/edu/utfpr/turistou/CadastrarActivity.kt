@@ -39,7 +39,8 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
     private var aguardandoLocalizacao = false
     private var imagemBlob: ByteArray? = null
 
-    private lateinit var banco: DatabaseHandler // Declarando a variável do banco de dados
+    // Instancia o handler do banco de dados
+    private lateinit var banco: DatabaseHandler
 
     private val register = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
         if (bitmap != null) {
@@ -50,6 +51,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    // Inicializa a Activity, views, banco e atualizações de localização
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cadastrar)
@@ -88,6 +90,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
 
     }
 
+    // Verifica permissões e inicia requests de localização
     private fun iniciarAtualizacaoLocalizacao(exibirToastErro: Boolean = true) {
         if (
             ActivityCompat.checkSelfPermission(
@@ -148,6 +151,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    // Trata resposta da solicitação de permissão de localização
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -165,8 +169,8 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    // Preenche latitude/longitude na primeira localização e para os updates
     override fun onLocationChanged(location: Location) {
-        // Preenche automaticamente na primeira localização recebida.
         etLatitude.setText(location.latitude.toString())
         etLongitude.setText(location.longitude.toString())
         try {
@@ -178,6 +182,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    // Pausa updates de localização se estavam ativos
     override fun onPause() {
         super.onPause()
         if (::locationManager.isInitialized && aguardandoLocalizacao) {
@@ -191,15 +196,17 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    // Solicita atualização de localização sem fechar a Activity
     fun btAtualizarLocalizacaoOnClick(view: View) {
-        // Atualização manual não encerra a Activity - em caso de erro apenas ignora e mantém os dados atuais.
         iniciarAtualizacaoLocalizacao(exibirToastErro = false)
     }
 
+    // Abre câmera para capturar foto e armazenar em blob
     fun btTirarFotoOnClick(view: View) {
         register.launch(null)
     }
 
+    // Salva ou atualiza cadastro no banco em thread de background
     fun btAlterarOnClick(view: View) {
         val nome = etNome.text.toString()
         val descricao = etDescricao.text.toString()
@@ -248,6 +255,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
 
     }
 
+    // Consulta Geocoding do Google Maps e retorna o endereço formatado
     private fun buscarEnderecoPorCoordenadas(latitude: String, longitude: String): String {
         if (latitude.isBlank() || longitude.isBlank()) {
             return ""
@@ -299,6 +307,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    // Lê a chave do Google Maps a partir do meta-data do Manifest
     private fun obterGoogleMapsApiKey(): String {
         return try {
             val appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
@@ -309,6 +318,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    // Remove o registro do banco e finaliza a Activity
     fun btExcluirOnClick(view: View) {
         if (cadastroId == 0) {
             Toast.makeText(this, "Registro ainda não salvo.", Toast.LENGTH_SHORT).show()
@@ -319,6 +329,7 @@ class CadastrarActivity : AppCompatActivity(), LocationListener {
         finish()
     }
 
+    // Converte Bitmap para array de bytes JPEG
     private fun bitmapToBlob(bitmap: Bitmap): ByteArray {
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)

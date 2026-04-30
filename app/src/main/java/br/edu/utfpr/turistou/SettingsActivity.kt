@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 
@@ -19,17 +20,19 @@ class SettingsActivity : AppCompatActivity() {
         const val DEFAULT_MAP_ZOOM = 14
         const val DEFAULT_MAP_TYPE = "roadmap"
 
+        // Migra o zoom salvo no formato antigo
         fun migrateLegacyZoomPreference(context: Context) {
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             val value = prefs.all[PREF_MAP_DEFAULT_ZOOM]
 
             if (value is String) {
                 val migratedZoom = value.toIntOrNull()?.coerceIn(MIN_MAP_ZOOM, MAX_MAP_ZOOM) ?: DEFAULT_MAP_ZOOM
-                // commit() garante o valor convertido antes de o SeekBarPreference carregar.
-                prefs.edit().putInt(PREF_MAP_DEFAULT_ZOOM, migratedZoom).commit()
+                // Garante o valor convertido antes do SeekBarPreference carregar.
+                prefs.edit { putInt(PREF_MAP_DEFAULT_ZOOM, migratedZoom) }
             }
         }
 
+        // Lê o zoom padrão do mapa
         fun getDefaultZoom(context: Context): Int {
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             return when (val value = prefs.all[PREF_MAP_DEFAULT_ZOOM]) {
@@ -39,20 +42,23 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        // Lê o tipo do mapa salvo
         fun getMapType(context: Context): String {
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             return prefs.getString(PREF_MAP_TYPE, DEFAULT_MAP_TYPE) ?: DEFAULT_MAP_TYPE
         }
 
+        // Salva zoom e tipo do mapa
+        @Suppress("unused")
         fun saveMapSettings(context: Context, zoom: Int, mapType: String) {
-            PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putInt(PREF_MAP_DEFAULT_ZOOM, zoom.coerceIn(MIN_MAP_ZOOM, MAX_MAP_ZOOM))
-                .putString(PREF_MAP_TYPE, mapType)
-                .apply()
+            PreferenceManager.getDefaultSharedPreferences(context).edit {
+                putInt(PREF_MAP_DEFAULT_ZOOM, zoom.coerceIn(MIN_MAP_ZOOM, MAX_MAP_ZOOM))
+                putString(PREF_MAP_TYPE, mapType)
+            }
         }
     }
 
+    // Inicializa a tela de configurações e o botão de voltar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
@@ -72,8 +78,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+        // Carrega as preferências da tela
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            SettingsActivity.migrateLegacyZoomPreference(requireContext())
+            migrateLegacyZoomPreference(requireContext())
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
         }
     }

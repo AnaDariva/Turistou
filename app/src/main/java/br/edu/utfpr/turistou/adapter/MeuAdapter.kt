@@ -17,12 +17,12 @@ import br.edu.utfpr.turistou.entity.Cadastro
 
 class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
 
-    // Metodo responsável por retornar a quantidade de itens da lista
+    // Retorna a quantidade de itens da lista
     override fun getCount(): Int {
         return lista.count
     }
 
-    // Metodo responsável por retornar o item da lista
+    // Monta o cadastro da posição solicitada
     override fun getItem(id: Int): Any? {
         lista.moveToPosition(id)
 
@@ -39,30 +39,32 @@ class MeuAdapter(val contexto : Context, val lista : Cursor) : BaseAdapter() {
         return cadastro
     }
 
-    // Metodo responsável por retornar o id do item da lista
+    // Retorna o id do item da posição solicitada
     override fun getItemId(id: Int): Long {
         lista.moveToPosition(id)
         return lista.getInt(lista.getColumnIndexOrThrow("_id")).toLong()
     }
 
-    // Metodo responsável por criar a view de cada elemento da lista
-    override fun getView( id : Int, p1 : View?, p2 : ViewGroup? ): View? {
+    // Cria a view de cada item da lista
+    override fun getView( id : Int, convertView: View?, parent : ViewGroup? ): View? {
 
-        // recupera a referência do arquivo xml do elemento da lista
-        val inflater = contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val v = inflater.inflate(R.layout.elemento_lista, null)
+        // Reaproveita a view do item quando existir
+        val v = convertView ?: run {
+            val inflater = contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            inflater.inflate(R.layout.elemento_lista, parent, false)
+        }
 
-        // recupera os componentes visuais do elemento da lista
+        // Pega as views do item
         val tvNome = v.findViewById<TextView>(R.id.tvNomeElementoLista)
         val tvDescricao = v.findViewById<TextView>(R.id.tvDescricaoElementoLista)
         val tvEndereco = v.findViewById<TextView>(R.id.tvEnderecoElementoLista)
         val ivFoto = v.findViewById<ImageView>(R.id.ivFotoElementoLista)
         val btEditar = v.findViewById<ImageButton>(R.id.btEditarElementoLista)
 
-        // posiciona o cursor na linha correspondente ao id
+        // Move o cursor para a posição atual
         lista.moveToPosition(id)
 
-        // preenche os componentes visuais com os dados do cursor
+        // Preenche os campos com os dados do cursor
         val idCol = lista.getColumnIndexOrThrow("_id")
         val nomeCol = lista.getColumnIndexOrThrow("nome")
         val descricaoCol = lista.getColumnIndexOrThrow("descricao")

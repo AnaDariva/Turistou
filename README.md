@@ -69,3 +69,13 @@ Turistou/
 ├── gradlew
 ├── gradlew.bat
 └── README.md
+```
+
+---
+
+## 👩‍💻 Autores
+
+- **Adriana Dantas** - Acadêmica de Análise e Desenvolvimento de Sistemas na UTFPR-PB
+- **Ana Luisa Dariva Ramos** - Acadêmica de Análise e Desenvolvimento de Sistemas na UTFPR-PB
+- **Emanoel M. Marcomin** - Acadêmico de Análise e Desenvolvimento de Sistemas na UTFPR-PB
+- **Jefferson** - Acadêmico de Análise e Desenvolvimento de Sistemas na UTFPR-PB
